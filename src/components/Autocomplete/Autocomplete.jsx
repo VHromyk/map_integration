@@ -6,7 +6,7 @@ import useOnclickOutside from 'react-cool-onclickoutside';
 import style from './Autocomplete.module.css';
 import { useEffect } from 'react';
 
-const Autocomplete = ({ isLoaded }) => {
+const Autocomplete = ({ isLoaded, onSelect }) => {
     const {
         ready,
         value,
@@ -43,6 +43,7 @@ const Autocomplete = ({ isLoaded }) => {
             getGeocode({ address: description }).then((results) => {
                 const { lat, lng } = getLatLng(results[0]);
                 console.log('📍 Coordinates: ', { lat, lng });
+                onSelect({ lat, lng });
             });
         };
 
@@ -67,17 +68,19 @@ const Autocomplete = ({ isLoaded }) => {
     }, [isLoaded, init]);
 
     return (
-        <div className={style.container} ref={ref}>
-            <input
-                type="text"
-                className={style.input}
-                value={value}
-                onChange={handleInput}
-                disabled={!ready}
-                placeholder="Where are you going?"
-            />
-            {status === 'OK' && <ul>{renderSuggestions()}</ul>}
-        </div>
+        <>
+            <div className={style.container} ref={ref}>
+                <input
+                    type="text"
+                    className={style.input}
+                    value={value}
+                    onChange={handleInput}
+                    disabled={!ready}
+                    placeholder="Where are you going?"
+                />
+                {status === 'OK' && <ul>{renderSuggestions()}</ul>}
+            </div>
+        </>
     );
 };
 

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { GoogleMap } from '@react-google-maps/api';
 // import { getCenterCoordinates } from '../../utils/getCenterCoordinates';
-import style from './Map.module.css'
+import style from './Map.module.css';
 import { defaultTheme } from './Theme';
+import CurrentLocationMarker from '../CurrentLocationMarker';
+import Marker from '../Marker';
 
 const containerStyle = {
     width: '100%',
@@ -20,7 +22,12 @@ const defaultOptions = {
     styles: defaultTheme,
 };
 
-const Map = ({ center }) => {
+const MODES = {
+    MOVE: 0,
+    SET_MARKER: 1,
+};
+
+const Map = ({ center, mode, markers, onMarkersAdd }) => {
     const mapRef = React.useRef(undefined);
 
     const onLoad = React.useCallback(function callback(map) {
@@ -31,6 +38,16 @@ const Map = ({ center }) => {
         mapRef.current = undefined;
     }, []);
 
+    const onClick = useCallback(
+        (location) => {
+            if (mode === MODES.SET_MARKER) {
+                const lat = location.latLng.lat();
+                const lng = location.latLng.lng();
+                onMarkersAdd({ lat, lng });
+            } 
+        },
+        [mode, onMarkersAdd]
+    );
 
     return (
         <div className={style.container}>
@@ -41,13 +58,16 @@ const Map = ({ center }) => {
                 onLoad={onLoad}
                 onUnmount={onUnmount}
                 options={defaultOptions}
+                onClick={onClick}
             >
+                <CurrentLocationMarker position={center} />
                 {/* Child components, such as markers, info windows, etc. */}
-                <></>
+                {markers.map((marker) => (
+                    <Marker key={marker.lat} position={marker} />
+                ))}
             </GoogleMap>
         </div>
     );
 };
-
 
 export default Map;

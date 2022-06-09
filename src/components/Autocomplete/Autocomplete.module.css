@@ -1,3 +1,7 @@
-.container {
-  position: relative;
+
+.input {
+  height: 30px;
+  width: 600px;
+  padding-left: 10px;
 }
+
